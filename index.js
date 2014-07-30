@@ -24,7 +24,21 @@ EmberCLIEmberLeaflet.prototype.treeFor = function treeFor(name) {
 };
 
 EmberCLIEmberLeaflet.prototype.included = function included(app) {
-  app.import('vendor/ember-leaflet/dist/ember-leaflet.js', {
+  var data = fs.readFileSync('node_modules/ember-cli-ember-leaflet/vendor/ember-leaflet/dist/ember-leaflet.js', {encoding: 'utf8'});
+
+  var replacedDefine = data.replace(/@module ember-leaflet/g,
+    '@module ember-leaflet\n' +
+    '*/\n' +
+    '    define("ember-leaflet", [], function() {\n' +
+    '        var ret = new Array ();\n' +
+    '        ret["default"] = EmberLeaflet;\n' +
+    '        return ret;\n' +
+    '    });\n' +
+    '/*');
+  fs.writeFileSync('node_modules/ember-cli-ember-leaflet/vendor/ember-leaflet/dist/ember-leaflet-es6.js', replacedDefine, {encoding: 'utf8'});
+
+
+  app.import('vendor/ember-leaflet/dist/ember-leaflet-es6.js', {
     exports: {
       'ember-leaflet': 'default'
     }
